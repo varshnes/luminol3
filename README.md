@@ -1,7 +1,7 @@
 # luminol3
 
-[![Python versions](https://img.shields.io/badge/Python-2.7%2C%203.5%2C%203.6-blue.svg)](https://travis-ci.org/brennv/luminol)
-[![Build status](https://travis-ci.org/brennv/luminol.svg?branch=master)](https://travis-ci.org/brennv/luminol)
+[![Python Versions](https://img.shields.io/badge/Python-2.7%2C%203.5%2C%203.6-blue.svg)](https://travis-ci.org/brennv/luminol)
+[![Build Status](https://travis-ci.org/brennv/luminol.svg?branch=master)](https://travis-ci.org/brennv/luminol)
 [![Test Coverage](https://codeclimate.com/github/brennv/luminol3/badges/coverage.svg)](https://codeclimate.com/github/brennv/luminol3/coverage)
 [![Code Climate](https://codeclimate.com/github/brennv/luminol3/badges/gpa.svg)](https://codeclimate.com/github/brennv/luminol3)
 [![Issue Count](https://codeclimate.com/github/brennv/luminol3/badges/issue_count.svg)](https://codeclimate.com/github/brennv/luminol3)
@@ -67,12 +67,12 @@ ts2 correlates with ts1 at time period (2, 5)
 
 ### Overview
 
-The primary features of luminol are anomaly detection and correlation. By comparing scored time series from separate events, it can aid in the investigation of possible causes of anomaly. 
+The primary features of luminol are anomaly detection and correlation. By comparing scored time series from separate events, it can aid in the investigation of possible causes of anomaly.
 
 * Score a time series for anomalies and identify corresponding time windows.
 * Correlate anomaly periods between two time series.
 
-Luminol is configurable in a sense that scoring thresholds are tunable and you can choose from several algorithms utilized for anomaly detection and/or correlation. 
+Luminol is configurable in a sense that scoring thresholds are tunable and you can choose from several algorithms utilized for anomaly detection and/or correlation.
 
 ### Typical workflow
 

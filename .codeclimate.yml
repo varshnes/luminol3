@@ -1,0 +1,18 @@
+engines:
+  rubocop:
+    enabled: true
+    #checks:
+    #	Rubocop/Metrics/ClassLength:
+    #  	enabled: false
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - python
+ratings:
+  paths:
+  - luminol/**
+  - "**.py"
+exclude_paths:
+- "demo/"
+- "tests/"
