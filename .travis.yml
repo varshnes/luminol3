@@ -11,7 +11,8 @@ addons:
 before_install: sudo apt-get install -qq python-numpy python-scipy
 install:
   - pip install -r requirements.txt
-  - pip install pytest pytest-cov pylama
+  - pip install pytest pytest-cov pylama codeclimate-test-reporter coverage
 before_script: python -m pylama -i E501 luminol/ || true
 
-script: python -m pytest --cov=luminol/ tests/
+# --cov=luminol/
+script: python -m coverage --source=luminol run pytest tests/
