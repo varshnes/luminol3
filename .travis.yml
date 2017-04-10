@@ -1,18 +1,19 @@
-addons:
-    code_climate:
-        repo_token: f036bdb9e3a0c035861c5ce50e970dba2adc01692f17c90fc36a7cf64a5fc66a
-
 language: python
 python:
   - 2.7_with_system_site_packages
   - 3.5
   - 3.6
 
+addons:
+    code_climate:
+        repo_token: f036bdb9e3a0c035861c5ce50e970dba2adc01692f17c90fc36a7cf64a5fc66a
+
 before_install: sudo apt-get install -qq python-numpy python-scipy
 install:
   - pip install -r requirements.txt
-  - pip install pytest pytest-cov pylama
+  - pip install pylama pytest pytest-cov codeclimate-test-reporter
+before_script: python -m pylama -i E501 luminol/ || true
 
-script: python -m pytest --cov=luminol/ tests/
-
-after_script: python -m pylama -i E501 luminol/ || true
+script:
+  - python -m pytest --cov=luminol/ tests/
+  - codeclimate-test-reporter --file .coverage
