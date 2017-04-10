@@ -1,7 +1,7 @@
 # luminol3
 
-[![Build status](https://travis-ci.org/brennv/luminol.svg?branch=master)](https://travis-ci.org/brennv/luminol)
 [![Python versions](https://img.shields.io/badge/Python-2.7%2C%203.5%2C%203.6-blue.svg)](https://travis-ci.org/brennv/luminol)
+[![Build status](https://travis-ci.org/brennv/luminol.svg?branch=master)](https://travis-ci.org/brennv/luminol)
 
 A Python 3 compatible fork of [luminol](https://github.com/linkedin/luminol) for detecting anomalies in a time series, and correlating anomaly periods between two time series.
 
