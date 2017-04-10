@@ -61,12 +61,32 @@ ts2 correlates with ts1 at time period (2, 5)
 
 ### Overview
 
-The two major functionalities it supports are anomaly detection and correlation. By comparing scored time series from separate events, it can aid in the investigation of possible causes of anomaly. The main features are:
+The primary features of luminol are anomaly detection and correlation. By comparing scored time series from separate events, it can aid in the investigation of possible causes of anomaly. 
 
 * Score a time series for anomalies and identify corresponding time windows.
 * Correlate anomaly periods between two time series.
 
-Luminol is configurable in a sense that scoring thresholds are also tunable and you can choose from several algorithms you want to use for anomaly detection and/or correlation. 
+Luminol is configurable in a sense that scoring thresholds are tunable and you can choose from several algorithms utilized for anomaly detection and/or correlation. 
+
+### Typical workflow
+
+Conduct anomaly detection on a single time series ts.
+```python
+detector = luminol.anomaly_detector.AnomalyDetector(ts)
+anomalies = detector.get_anomalies()
+```
+
+If there is anomaly, correlate the first anomaly period with a secondary time series ts2.
+```python
+if anomalies:
+    time_period = anomalies[0].get_time_window()
+    correlator = luminol.correlator.Correlator(ts, ts2, time_period)
+```
+
+Get the correlation coefficient
+```python
+print correlator.get_correlation_result().coefficient
+```
 
 ### Modules
 Modules in Luminol refers to customized classes developed for better data representation, which are `Anomaly`, `CorrelationResult` and `TimeSeries`.
