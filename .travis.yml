@@ -10,4 +10,9 @@ install:
   - pip install pytest pytest-cov pylama
 
 script: python -m pytest --cov=luminol/ tests/
+
 after_script: python -m pylama -i E501 luminol/ || true
+
+addons:
+    code_climate:
+        repo_token: f036bdb9e3a0c035861c5ce50e970dba2adc01692f17c90fc36a7cf64a5fc66a
