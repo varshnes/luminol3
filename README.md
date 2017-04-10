@@ -1,6 +1,6 @@
 # luminol3
 
-A Python 3 fork of [luminol](https://github.com/linkedin/luminol) for detecting anomalies in a time series. It can also correlate anomaly periods between two time series.
+A Python 2/3 compatible fork of [luminol](https://github.com/linkedin/luminol) for detecting anomalies in a time series, and correlating anomaly periods between two time series.
 
 ### Installation
 ```
