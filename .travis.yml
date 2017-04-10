@@ -13,8 +13,9 @@ before_install: sudo apt-get install -qq python-numpy python-scipy
 
 install:
   - pip install -r requirements.txt
-  - pip install pytest pytest-cov pylama codeclimate-test-reporter
-
+  - pip install pylama pytest pytest-cov codeclimate-test-reporter
 before_script: python -m pylama -i E501 luminol/ || true
 
-script: python -m pytest --cov=luminol/ tests/
+script:
+  - python -m pytest --cov=luminol/ tests/
+  - codeclimate-test-reporter --file .coverage
