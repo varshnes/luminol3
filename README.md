@@ -1,62 +1,76 @@
-# luminol #
+# luminol3
 
-### Overview
-Luminol is a light weight python library for time series data analysis. The two major functionalities it supports are anomaly detection and correlation. It can be used to investigate possible causes of anomaly. You collect time series data and Luminol can:
-* Given a time series, detect if the data contains any anomaly and gives you back a time window where the anomaly happened in, a time stamp where the anomaly reaches its severity, and a score indicating how severe is the anomaly compare to others in the time series.
-* Given two time series, help find their correlation coefficient. Since the correlation mechanism allows a shift room, you are able to correlate two peaks that are slightly apart in time.
-
-Luminol is configurable in a sense that you can choose which specific algorithm you want to use for anomaly detection or correlation. In addition, the library does not rely on any predefined threshold on the values of a time series. Instead, it assigns each data point an anomaly score and identifies anomalies using the scores.  
-
-By using the library, we can establish a logic flow for root cause analysis. For example, suppose there is a spike in network latency:
-* Anomaly detection discovers the spike in network latency time series
-* Get the anomaly period of the spike, and correlate with other system metrics(GC, IO, CPU, etc.) in the same time range
-* Get a ranked list of correlated metrics, and the root cause candidates are likely to be on the top.
-
-Investigating the possible ways to automate root cause analysis is one of the main reasons we developed this library and it will be a fundamental part of the future work.
-
-***
+A Python 3 fork of [luminol](https://github.com/linkedin/luminol) for detecting anomalies in a time series. It can also correlate anomaly periods between two time series.
 
 ### Installation
-make sure you have python, pip, numpy, and install directly through pip:
 ```
-pip install luminol
+pip install luminol3
 ```
-the most up-to-date version of the library is 0.1.
 
-***
+### Getting started
 
-### Quick Start
-This is a quick start guide for using luminol for time series analysis.
+#### Calculate anomaly scores
 
-1. import the library
 ```python
-import luminol
+from luminol.anomaly_detector import AnomalyDetector
+
+ts = {0: 0, 1: 0.5, 2: 1, 3: 1, 4: 1, 5: 0, 6: 0, 7: 0, 8: 0}
+
+my_detector = AnomalyDetector(ts)
+score = my_detector.get_all_scores()
+
+for timestamp, score in score.iteritems():
+    print(timestamp, ts[timestamp], score)
+
+""" Output:
+time  value  score
+0     0      0.0
+1     0.5    0.873128250131
+2     1      1.57163085024
+3     1      2.13633686334
+4     1      1.70906949067
+5     0      2.90541813415
+6     0      1.17154110935
+7     0      0.937232887479
+8     0      0.749786309983
+"""
 ```
 
-2. conduct anomaly detection on a single time series ts.
+#### Correlate anomaly periods between two time series
+
 ```python
-detector = luminol.anomaly_detector.AnomalyDetector(ts)
-anomalies = detector.get_anomalies()
+from luminol.anomaly_detector import AnomalyDetector
+from luminol.correlator import Correlator
+
+ts1 = {0: 0, 1: 0.5, 2: 1, 3: 1, 4: 1, 5: 0, 6: 0, 7: 0, 8: 0}
+ts2 = {0: 0, 0: 0.5, 2: 1, 3: 0.5, 4: 1, 5: 0, 6: 1, 7: 1, 8: 1}
+
+my_detector = AnomalyDetector(ts1, score_threshold=1.5)
+score = my_detector.get_all_scores()
+anomalies = my_detector.get_anomalies()
+for a in anomalies:
+    time_period = a.get_time_window()
+    my_correlator = Correlator(ts1, ts2, time_period)
+    if my_correlator.is_correlated(threshold=0.8):
+        print("ts2 correlate with ts1 at time period (%d, %d)" % time_period)
+
+""" Output:
+ts2 correlates with ts1 at time period (2, 5)
+"""
 ```
 
-3. if there is anomaly, correlate the first anomaly period with a secondary time series ts2.
-```python
-if anomalies:
- time_period = anomalies[0].get_time_window()
- correlator = luminol.correlator.Correlator(ts, ts2, time_period)
-```
+### Overview
 
-4. print the correlation coefficient
-```python
-print(correlator.get_correlation_result().coefficient)
-```
+The two major functionalities it supports are anomaly detection and correlation. By comparing scored time series from separate events, it can aid in the investigation of possible causes of anomaly. The main features are:
 
-These are really simple use of luminol. For information about the parameter types, return types and optional parameters, please refer to the API.
+* Score a time series for anomalies and identify corresponding time windows.
+* Correlate anomaly periods between two time series.
 
-***
+Luminol is configurable in a sense that scoring thresholds are also tunable and you can choose from several algorithms you want to use for anomaly detection and/or correlation. 
 
 ### Modules
 Modules in Luminol refers to customized classes developed for better data representation, which are `Anomaly`, `CorrelationResult` and `TimeSeries`.
+
 #### Anomaly
 _class_ luminol.modules.anomaly.**Anomaly**
 <br/> It contains these attributes:
@@ -87,10 +101,9 @@ __init__(self, series)
 
 It has a various handy methods for manipulating time series, including generator `iterkeys`, `itervalues`, and `iteritems`. It also supports binary operations such as add and subtract. Please refer to the [code](https://github.com/linkedin/naarad/blob/master/lib/luminol/src/luminol/modules/time_series.py) and inline comments for more information.
 
-***
-
 ### API
 The library contains two classes: `AnomalyDetector` and `Correlator`, and there are two sets of APIs, one corresponding to each class. There are also customized modules for better data representation. The [Modules](#modules) section in this documentation may provide useful information as you walk through the APIs.
+
 #### AnomalyDetector
 _class_ luminol.anomaly_detector.**AnomalyDetecor**
 ```python
@@ -175,54 +188,6 @@ Additional parameters are:
 The **Correlator** class has the following public methods:
 * `get_correlation_result()`: return a [CorrelationResult](#modules) object.
 * `is_correlated(threshold=0.7)`: if coefficient above the passed in threshold, return a [CorrelationResult](#modules) object. Otherwise, return false.
-
-### Example
-1. Calculate anomaly scores.
-
-```python
-from luminol.anomaly_detector import AnomalyDetector
-
-ts = {0: 0, 1: 0.5, 2: 1, 3: 1, 4: 1, 5: 0, 6: 0, 7: 0, 8: 0}
-
-my_detector = AnomalyDetector(ts)
-score = my_detector.get_all_scores()
-for timestamp, value in score.iteritems():
-    print(timestamp, value)
-
-""" Output:
-0 0.0
-1 0.873128250131
-2 1.57163085024
-3 2.13633686334
-4 1.70906949067
-5 2.90541813415
-6 1.17154110935
-7 0.937232887479
-8 0.749786309983
-"""
-```
-
-2. Correlate ts1 with ts2 on every anomaly.
-
-```python
-from luminol.anomaly_detector import AnomalyDetector
-from luminol.correlator import Correlator
-
-ts1 = {0: 0, 1: 0.5, 2: 1, 3: 1, 4: 1, 5: 0, 6: 0, 7: 0, 8: 0}
-ts2 = {0: 0, 0: 0.5, 2: 1, 3: 0.5, 4: 1, 5: 0, 6: 1, 7: 1, 8: 1}
-
-my_detector = AnomalyDetector(ts1, score_threshold=1.5)
-score = my_detector.get_all_scores()
-anomalies = my_detector.get_anomalies()
-for a in anomalies:
-    time_period = a.get_time_window()
-    my_correlator = Correlator(ts1, ts2, time_period)
-    if my_correlator.is_correlated(threshold=0.8):
-        print("ts2 correlate with ts1 at time period (%d, %d)" % time_period)
-
-""" Output:
-ts2 correlates with ts1 at time period (2, 5)
-"""
 
 ### Contributing
 Clone source and install package and dev requirements:
